@@ -4,9 +4,8 @@ import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_creat_task.*
 
@@ -23,6 +22,8 @@ class CreatTaskActivity : AppCompatActivity() {
     val COL_PROFILE = "profileimg"
     val COL_STAGE = "current_stage"
     val COL_IMAGE_BIT = "picturetaken"
+
+    var modelSelected = 0;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +46,33 @@ class CreatTaskActivity : AppCompatActivity() {
         val ran = (0 until 8).random()
 
         var chooseMdl : Spinner = findViewById(R.id.spinner_choosemodel)
-        val models = arrayOf("Object Detection", "Face Detection", "Pose Detection", "Image Labeling", "Text Recognition", "customSeg")
+        val models = arrayOf("Object Detection", "Face Detection", "Pose Detection", "Image Labeling", "Text Recognition", "customSeg", "From URL")
         chooseMdl.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, models)
+
+        chooseMdl.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+                editTextURL.visibility = View.GONE
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (position == 6) { // enter custom URL
+                    editTextURL.visibility = View.VISIBLE
+                } else {
+                    editTextURL.visibility = View.GONE
+                }
+            }
+        }
 
         btnInsert.setOnClickListener {
             if (editTextName.text.toString().isNotEmpty() &&
-                editTextAge.text.toString().isNotEmpty()
+                editTextAge.text.toString().isNotEmpty() &&
+                mediaType.checkedRadioButtonId != -1
             ) {
                 val cv = ContentValues()
                 cv.put(COL_NAME, editTextName.text.toString())
@@ -59,8 +81,14 @@ class CreatTaskActivity : AppCompatActivity() {
                 cv.put(COL_PROFILE, profiles[ran])
                 cv.put(COL_STAGE, "to collect")
                 contentResolver.insert(CONTENT_URI, cv)
+                // new field
+                val checkedMediaType = getMediaType()
+                modelSelected = chooseMdl.selectedItemPosition
+                if(modelSelected == 6) {
+                    val customURL = editTextURL.text.toString()
+                }
             } else {
-                Toast.makeText(this, "Please enter Name and/or Number", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter Name and/or Number and media type", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -68,5 +96,11 @@ class CreatTaskActivity : AppCompatActivity() {
             val intent = Intent(this, SuccessActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    fun getMediaType() : String {
+        val id = mediaType.checkedRadioButtonId
+        val checkedBtn : RadioButton = findViewById(id)
+        return checkedBtn.text.toString()
     }
 }
