@@ -17,6 +17,7 @@ class User {
     var profileurl: String = ""
     var bmp: Bitmap? = null
 
+
     constructor(name: String, age: Int, imageurl: String) {
         this.name = name
         this.age = age

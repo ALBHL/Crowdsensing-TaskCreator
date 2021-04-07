@@ -4,10 +4,15 @@ import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_creat_task.*
+import kotlinx.android.synthetic.main.activity_register.*
+import java.util.*
 
 class CreatTaskActivity : AppCompatActivity() {
     val PROVIDER_NAME = "com.example.collector/AcronymProvider"
@@ -87,6 +92,22 @@ class CreatTaskActivity : AppCompatActivity() {
                 if(modelSelected == 6) {
                     val customURL = editTextURL.text.toString()
                 }
+
+                // upload the entered things to firebase
+                val uid = FirebaseAuth.getInstance().uid ?: ""
+                val task_id = UUID.randomUUID().toString()
+                val ref = FirebaseDatabase.getInstance().getReference("/users/$uid/$task_id")
+
+                val task = Task(task_id, editTextName.text.toString(), editTextDes.text.toString(), models[0], uid)
+
+                ref.setValue(task)
+                    .addOnSuccessListener {
+                        Log.d("CreateTaskActivity", "Finally we saved the task to Firebase Database id: $task_id")
+                    }
+                    .addOnFailureListener {
+                        Log.d("CreateTaskActivity", "Failed to set task value to database: ${it.message}")
+                    }
+
             } else {
                 Toast.makeText(this, "Please enter Name and/or Number and media type", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
