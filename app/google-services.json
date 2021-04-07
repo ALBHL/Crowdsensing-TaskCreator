@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "878683428079",
+    "project_id": "crowdsensing-task-creator",
+    "storage_bucket": "crowdsensing-task-creator.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878683428079:android:d223f3f921d14ad540771a",
+        "android_client_info": {
+          "package_name": "com.example.taskcreator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "878683428079-il6e4sp547jbn23o1g8dftru4em04pvp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBy04R7QdPrmFZdg-MVU8ZCcec1qduJL1k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "878683428079-il6e4sp547jbn23o1g8dftru4em04pvp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
