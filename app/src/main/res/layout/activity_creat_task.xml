@@ -61,6 +61,31 @@
         app:layout_constraintStart_toStartOf="@+id/editTextName"
         app:layout_constraintTop_toBottomOf="@id/editTextName" />
 
+    <RadioGroup
+        android:id="@+id/mediaType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/editTextAge"
+        app:layout_constraintStart_toStartOf="@+id/editTextAge"
+        app:layout_constraintTop_toBottomOf="@id/editTextAge">
+
+        <RadioButton
+            android:id="@+id/imageType"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Image" />
+
+        <RadioButton
+            android:id="@+id/audioType"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Audio" />
+    </RadioGroup>
+
     <EditText
         android:id="@+id/editTextDes"
         android:layout_width="match_parent"
@@ -72,9 +97,9 @@
         android:lines="8"
         android:padding="8dp"
         android:textColor="@android:color/background_dark"
-        app:layout_constraintEnd_toEndOf="@+id/editTextAge"
-        app:layout_constraintStart_toStartOf="@+id/editTextAge"
-        app:layout_constraintTop_toBottomOf="@id/editTextAge" />
+        app:layout_constraintEnd_toEndOf="@+id/mediaType"
+        app:layout_constraintStart_toStartOf="@+id/mediaType"
+        app:layout_constraintTop_toBottomOf="@id/mediaType" />
 
     <TextView
         android:id="@+id/textView3"
@@ -96,6 +121,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView3" />
+
+    <EditText
+        android:id="@+id/editTextURL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:visibility="gone"
+        android:hint="Enter URL for custom model"
+        android:padding="8dp"
+        android:textColor="@android:color/background_dark"
+        app:layout_constraintEnd_toEndOf="@+id/spinner_choosemodel"
+        app:layout_constraintStart_toStartOf="@+id/spinner_choosemodel"
+        app:layout_constraintTop_toBottomOf="@id/spinner_choosemodel" />
 
     <Button
         android:id="@+id/btnInsert"
