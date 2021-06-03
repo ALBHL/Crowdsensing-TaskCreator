@@ -67,37 +67,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fetchUsers(data: MutableList<User>) {
-        val ref = FirebaseDatabase.getInstance().getReference("/users")
-        ref.addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onDataChange(p0: DataSnapshot) {
-                val adapter = GroupAdapter<ViewHolder>()
-
-                p0.children.forEach {
-                    Log.d("NewMessage", it.toString())
-                    val creator = it.getValue(Creator::class.java)
-                    if (creator != null) {
-                        adapter.add(CreatorItem(creator))
-                    }
-                }
-
-                recycleview_inbox.adapter = adapter
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-        })
-
-        // USING local sqlite db instead of fire base
-//        val adapter = GroupAdapter<ViewHolder>()
+//        val ref = FirebaseDatabase.getInstance().getReference("/users")
+//        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+//            override fun onDataChange(p0: DataSnapshot) {
+//                val adapter = GroupAdapter<ViewHolder>()
 //
-//        for (i in 0 until data.size) {
-//            if (data[i].cur_stage == "to collect") {
-//                adapter.add(UserItem(data[i]))
+//                p0.children.forEach {
+//                    Log.d("NewMessage", it.toString())
+//                    val creator = it.getValue(Creator::class.java)
+//                    if (creator != null) {
+//                        adapter.add(CreatorItem(creator))
+//                    }
+//                }
+//
+//                recycleview_inbox.adapter = adapter
 //            }
-//        }
 //
-//        recycleview_inbox.adapter = adapter
+//            override fun onCancelled(p0: DatabaseError) {
+//
+//            }
+//        })
+
+//         USING local sqlite db instead of fire base
+        val adapter = GroupAdapter<ViewHolder>()
+
+        for (i in 0 until data.size) {
+            if (data[i].cur_stage == "to collect") {
+                adapter.add(UserItem(data[i]))
+            }
+        }
+
+        recycleview_inbox.adapter = adapter
+    }
+}
+
+class UserItem(val user: User): Item<ViewHolder>() {
+    override fun bind(viewHolder: ViewHolder, position: Int) {
+        // will be called in the list of user object
+        viewHolder.itemView.outbox_query_title.text = user.name
+        val imageURL = user.profileurl
+        if (imageURL != "") {
+            Picasso.get().load(imageURL).into(viewHolder.itemView.imageViewprofile)
+        }
+    }
+    override fun getLayout(): Int {
+        return R.layout.outbox_file_row
     }
 }
 

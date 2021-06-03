@@ -47,7 +47,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="24dp"
-        android:text="This is the query description..."
+        android:text="Find the length of the line in front of the Tim Hortons on King St."
         app:layout_constraintBottom_toBottomOf="@+id/imageViewprofile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageViewprofile"
