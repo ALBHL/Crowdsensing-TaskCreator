@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -26,114 +25,138 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="100dp"
         android:layout_marginRight="100dp"
+        android:gravity="center"
         android:text="New Task"
         android:textColor="@android:color/black"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <EditText
-        android:id="@+id/editTextName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:padding="10dp"
-        android:hint="Task Name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView" />
-
-    <EditText
-        android:id="@+id/editTextAge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="Task Number"
-        android:inputType="number"
-        android:padding="8dp"
-        android:textColor="@android:color/background_dark"
-        app:layout_constraintEnd_toEndOf="@+id/editTextName"
-        app:layout_constraintStart_toStartOf="@+id/editTextName"
-        app:layout_constraintTop_toBottomOf="@id/editTextName" />
-
-    <RadioGroup
-        android:id="@+id/mediaType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/editTextAge"
-        app:layout_constraintStart_toStartOf="@+id/editTextAge"
-        app:layout_constraintTop_toBottomOf="@id/editTextAge">
-
-        <RadioButton
-            android:id="@+id/imageType"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Image" />
-
-        <RadioButton
-            android:id="@+id/audioType"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Audio" />
-    </RadioGroup>
-
-    <EditText
-        android:id="@+id/editTextDes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="top|left"
-        android:hint="Task Description"
-        android:inputType="textMultiLine"
-        android:lines="8"
-        android:padding="8dp"
-        android:textColor="@android:color/background_dark"
-        app:layout_constraintEnd_toEndOf="@+id/mediaType"
-        app:layout_constraintStart_toStartOf="@+id/mediaType"
-        app:layout_constraintTop_toBottomOf="@id/mediaType" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        android:text="Choose an Inferencer Model:"
-        android:textColor="@android:color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextDes" />
-
-    <Spinner
-        android:id="@+id/spinner_choosemodel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/btnInsert"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/textView">
 
-    <EditText
-        android:id="@+id/editTextURL"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:visibility="gone"
-        android:hint="Enter URL for custom model"
-        android:padding="8dp"
-        android:textColor="@android:color/background_dark"
-        app:layout_constraintEnd_toEndOf="@+id/spinner_choosemodel"
-        app:layout_constraintStart_toStartOf="@+id/spinner_choosemodel"
-        app:layout_constraintTop_toBottomOf="@id/spinner_choosemodel" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/editTextName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:hint="Task Name"
+                android:padding="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView" />
+
+            <EditText
+                android:id="@+id/editTextAge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="Task Number"
+                android:inputType="number"
+                android:padding="8dp"
+                android:textColor="@android:color/background_dark"
+                app:layout_constraintEnd_toEndOf="@+id/editTextName"
+                app:layout_constraintStart_toStartOf="@+id/editTextName"
+                app:layout_constraintTop_toBottomOf="@id/editTextName" />
+
+            <RadioGroup
+                android:id="@+id/mediaType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@+id/editTextAge"
+                app:layout_constraintStart_toStartOf="@+id/editTextAge"
+                app:layout_constraintTop_toBottomOf="@id/editTextAge">
+
+                <RadioButton
+                    android:id="@+id/imageType"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="Image" />
+
+                <RadioButton
+                    android:id="@+id/audioType"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Audio" />
+            </RadioGroup>
+
+            <fragment
+                android:id="@+id/map"
+                class="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp" />
+
+            <EditText
+                android:id="@+id/editTextDes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="top|left"
+                android:hint="Task Description"
+                android:inputType="textMultiLine"
+                android:lines="8"
+                android:padding="8dp"
+                android:textColor="@android:color/background_dark"
+                app:layout_constraintEnd_toEndOf="@+id/mediaType"
+                app:layout_constraintStart_toStartOf="@+id/mediaType"
+                app:layout_constraintTop_toBottomOf="@id/mediaType" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:text="Choose an Inferencer Model:"
+                android:textColor="@android:color/black"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextDes" />
+
+            <Spinner
+                android:id="@+id/spinner_choosemodel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView3" />
+
+            <EditText
+                android:id="@+id/editTextURL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="Enter URL for custom model"
+                android:padding="8dp"
+                android:textColor="@android:color/background_dark"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@+id/spinner_choosemodel"
+                app:layout_constraintStart_toStartOf="@+id/spinner_choosemodel"
+                app:layout_constraintTop_toBottomOf="@id/spinner_choosemodel" />
+
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/btnInsert"

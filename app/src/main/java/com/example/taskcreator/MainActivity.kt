@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     val URL = "content://$PROVIDER_NAME/Inbox"
     val CONTENT_URI = Uri.parse(URL)
 
-    val TABLEIN_NAME="Inbox"
+    val TABLEIN_NAME = "Inbox"
     val COL_NAME = "name"
     val COL_AGE = "age"
     val COL_ID = "id"
@@ -35,24 +35,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        button_to_add.setOnClickListener{
+        button_to_add.setOnClickListener {
             val intent = Intent(this, CreatTaskActivity::class.java)
             startActivity(intent)
         }
 
         val context = this
 
-        val result = contentResolver.query(CONTENT_URI,
+        val result = contentResolver.query(
+            CONTENT_URI,
             arrayOf(COL_ID, COL_NAME, COL_STAGE, COL_AGE, COL_PROFILE, COL_URL, COL_IMAGE_BIT),
-            null, null, null)
+            null, null, null
+        )
         val data = result?.let { readInData(it) }
         if (data != null) {
             fetchUsers(data)
         }
     }
 
-    private fun readInData(result: Cursor) : MutableList<User> {
-        val list : MutableList<User> = ArrayList()
+    private fun readInData(result: Cursor): MutableList<User> {
+        val list: MutableList<User> = ArrayList()
         while (result.moveToNext()) {
             val user = User()
             user.id = result.getString(0).toInt()
@@ -68,40 +70,55 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchUsers(data: MutableList<User>) {
         val ref = FirebaseDatabase.getInstance().getReference("/users")
-        ref.addListenerForSingleValueEvent(object: ValueEventListener{
-            override fun onDataChange(p0: DataSnapshot) {
-                val adapter = GroupAdapter<ViewHolder>()
-
-                p0.children.forEach {
-                    Log.d("NewMessage", it.toString())
-                    val creator = it.getValue(Creator::class.java)
-                    if (creator != null) {
-                        adapter.add(CreatorItem(creator))
-                    }
-                }
-
-                recycleview_inbox.adapter = adapter
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-        })
-
-        // USING local sqlite db instead of fire base
-//        val adapter = GroupAdapter<ViewHolder>()
+//        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+//            override fun onDataChange(p0: DataSnapshot) {
+//                val adapter = GroupAdapter<ViewHolder>()
 //
-//        for (i in 0 until data.size) {
-//            if (data[i].cur_stage == "to collect") {
-//                adapter.add(UserItem(data[i]))
+//                p0.children.forEach {
+//                    Log.d("NewMessage", it.toString())
+//                    val creator = it.getValue(Creator::class.java)
+//                    if (creator != null) {
+//                        adapter.add(CreatorItem(creator))
+//                    }
+//                }
+//
+//                recycleview_inbox.adapter = adapter
 //            }
-//        }
 //
-//        recycleview_inbox.adapter = adapter
+//            override fun onCancelled(p0: DatabaseError) {
+//
+//            }
+//        })
+
+//         USING local sqlite db instead of fire base
+        val adapter = GroupAdapter<ViewHolder>()
+
+        for (i in 0 until data.size) {
+            if (data[i].cur_stage == "to collect") {
+                adapter.add(UserItem(data[i]))
+            }
+        }
+
+        recycleview_inbox.adapter = adapter
     }
 }
 
-class CreatorItem(val creator: Creator): Item<ViewHolder>() {
+class UserItem(val user: User) : Item<ViewHolder>() {
+    override fun bind(viewHolder: ViewHolder, position: Int) {
+        // will be called in the list of user object
+        viewHolder.itemView.outbox_query_title.text = user.name
+        val imageURL = user.profileurl
+        if (imageURL != "") {
+            Picasso.get().load(imageURL).into(viewHolder.itemView.imageViewprofile)
+        }
+    }
+
+    override fun getLayout(): Int {
+        return R.layout.outbox_file_row
+    }
+}
+
+class CreatorItem(val creator: Creator) : Item<ViewHolder>() {
     override fun bind(viewHolder: ViewHolder, position: Int) {
         // will be called in the list of user object
         viewHolder.itemView.outbox_query_title.text = creator.uname
