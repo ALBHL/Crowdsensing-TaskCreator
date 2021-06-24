@@ -35,6 +35,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
+        android:id="@+id/mainScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
@@ -98,13 +99,86 @@
                     android:text="Audio" />
             </RadioGroup>
 
-            <fragment
-                android:id="@+id/map"
-                class="com.google.android.gms.maps.SupportMapFragment"
+            <RelativeLayout
+                android:id="@+id/map_layout"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp" />
+                android:layout_height="250dp">
+
+                <fragment
+                    android:id="@+id/map"
+                    class="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="-100dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="-100dp" />
+
+                <ImageView
+                    android:id="@+id/transparent_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@color/transparent" />
+            </RelativeLayout>
+
+            <!--            <com.google.android.material.slider.Slider-->
+            <!--                android:id="@+id/slider"-->
+            <!--                android:valueFrom="0"-->
+            <!--                android:valueTo="100"-->
+            <!--                android:stepSize="10"-->
+            <!--                style="@style/Widget.AppCompat.SeekBar.Discrete"-->
+            <!--                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"-->
+            <!--                android:theme="@style/ThemeOverlay.PrimaryPalette.Green"/>-->
+
+            <TextView
+                android:id="@+id/radiusSeekBarTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="left"
+                android:text="Radius"
+                android:textColor="@android:color/black"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <SeekBar
+                android:id="@+id/radiusSeekBar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:max="500"
+                android:min="0" />
+
+            <TextView
+                android:id="@+id/degreeSeekBarTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="left"
+                android:text="Angle"
+                android:textColor="@android:color/black"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/seekbar_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+<!--            <SeekBar-->
+<!--                android:id="@+id/degreeSeekBar"-->
+<!--                android:layout_width="fill_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:max="360"-->
+<!--                android:min="10" />-->
 
             <EditText
                 android:id="@+id/editTextDes"

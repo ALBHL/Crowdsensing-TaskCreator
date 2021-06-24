@@ -3,4 +3,6 @@
     <color name="colorPrimary">#5DB075</color>
     <color name="colorPrimaryDark">#21472c</color>
     <color name="colorAccent">#9effba</color>
+    <color name="transparent">#00000000</color>
+    <color name="colorOverlayBlue">#8078d9ff</color>
 </resources>

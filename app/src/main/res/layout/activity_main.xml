@@ -6,28 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleview_inbox"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="32dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ScrollView
+        android:id="@+id/taskScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="100dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleview_inbox"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </ScrollView>
 
     <Button
         android:id="@+id/button_to_add"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
         android:background="@drawable/circle_green_button"
         android:text="+"
         android:textColor="@android:color/white"
         android:textSize="40sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/taskScrollView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

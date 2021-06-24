@@ -7,4 +7,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Material Design theme. -->
+    <style name="Theme.MyApp" parent="Theme.MaterialComponents.Light.Bridge">
+        <!-- ... -->
+    </style>
+
+    <style name="ThemeOverlay.PrimaryPalette.Green" parent="">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    </style>
 </resources>

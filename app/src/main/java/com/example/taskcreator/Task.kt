@@ -9,7 +9,8 @@ class Task {
     var task_name: String = ""
     var task_description: String = ""
     var cur_stage: String = ""
-    var location: String = ""
+    var range_radius: String = ""
+    var range_angle: String = ""
     var model: String = ""
     var attribute: String = ""
     var uid: String = ""
@@ -17,12 +18,13 @@ class Task {
     var latitude: String = ""
     var longitude: String = ""
 
-    constructor(task_id: String, name: String, task_description: String, model: String, uid: String, latitude: String, longitude: String) {
+    constructor(task_id: String, name: String, task_description: String, model: String, uid: String, latitude: String, longitude: String, range_radius: String, range_angle: String) {
         this.task_id = task_id
         this.task_description = task_description
         this.task_name = name
         this.cur_stage = "to collect"
-        this.location = ""
+        this.range_radius = range_radius
+        this.range_angle = range_angle
         this.model = model
         this.attribute = "image"
         this.uid = uid
