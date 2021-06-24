@@ -1,12 +1,11 @@
 package com.example.taskcreator
 
-import android.graphics.Bitmap
-
 class Creator {
 
     var profileurl: String = ""
     var uname: String = ""
     var uid: String = ""
+//    var tasks: ArrayList<Task>? = null
 
     constructor(uid: String, uname: String, profileurl: String) {
         this.uname = uname
@@ -26,6 +25,9 @@ class Creator {
         } else {
             this.profileurl = profileurl
         }
+//        if (task != null && task.task_id != "") {
+//            tasks?.add(task)
+//        }
     }
 
     constructor() {

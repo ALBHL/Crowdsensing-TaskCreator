@@ -1,8 +1,8 @@
 package com.example.taskcreator
 
-import android.graphics.Bitmap
-import android.security.identity.AccessControlProfile
+import kotlinx.serialization.Serializable
 
+@Serializable
 class Task {
 
     var task_id: String = ""
@@ -14,8 +14,10 @@ class Task {
     var attribute: String = ""
     var uid: String = ""
     var profile_url: String = ""
+    var latitude: String = ""
+    var longitude: String = ""
 
-    constructor(task_id: String, name: String, task_description: String, model: String, uid: String) {
+    constructor(task_id: String, name: String, task_description: String, model: String, uid: String, latitude: String, longitude: String) {
         this.task_id = task_id
         this.task_description = task_description
         this.task_name = name
@@ -37,6 +39,8 @@ class Task {
             val ran = (0 until 8).random()
             this.profile_url = profiles[ran]
         }
+        this.latitude = latitude
+        this.longitude = longitude
     }
 
     constructor() {

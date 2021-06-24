@@ -16,6 +16,8 @@ import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.outbox_file_row.view.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class MainActivity : AppCompatActivity() {
     val PROVIDER_NAME = "com.example.collector/AcronymProvider"
@@ -70,36 +72,45 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchUsers(data: MutableList<User>) {
         val ref = FirebaseDatabase.getInstance().getReference("/users")
-//        ref.addListenerForSingleValueEvent(object: ValueEventListener{
-//            override fun onDataChange(p0: DataSnapshot) {
-//                val adapter = GroupAdapter<ViewHolder>()
-//
-//                p0.children.forEach {
-//                    Log.d("NewMessage", it.toString())
-//                    val creator = it.getValue(Creator::class.java)
-//                    if (creator != null) {
-//                        adapter.add(CreatorItem(creator))
-//                    }
-//                }
-//
-//                recycleview_inbox.adapter = adapter
-//            }
-//
-//            override fun onCancelled(p0: DatabaseError) {
-//
-//            }
-//        })
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.exists()) {
+                    val adapter = GroupAdapter<ViewHolder>()
+                    var tasks = ArrayList<Task>()
+                    p0.children.forEach {
+                        Log.d("NewMessage", it.toString())
+                        val creator = it.getValue(Creator::class.java)
+                        it.child("tasks").children.forEach {
+                            it.getValue(Task::class.java)?.let { it1 -> tasks.add(it1) }
+                        }
+                        if (creator != null && tasks != null) {
+                            for (i in 0 until tasks.size) {
+                                if (tasks[i].cur_stage == "to collect") {
+                                    adapter.add(CreatorItem(tasks[i], creator))
+                                }
+                            }
+                        }
+                    }
+
+                    recycleview_inbox.adapter = adapter
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
 
 //         USING local sqlite db instead of fire base
-        val adapter = GroupAdapter<ViewHolder>()
-
-        for (i in 0 until data.size) {
-            if (data[i].cur_stage == "to collect") {
-                adapter.add(UserItem(data[i]))
-            }
-        }
-
-        recycleview_inbox.adapter = adapter
+//        val adapter = GroupAdapter<ViewHolder>()
+//
+//        for (i in 0 until data.size) {
+//            if (data[i].cur_stage == "to collect") {
+//                adapter.add(UserItem(data[i]))
+//            }
+//        }
+//
+//        recycleview_inbox.adapter = adapter
     }
 }
 
@@ -118,10 +129,13 @@ class UserItem(val user: User) : Item<ViewHolder>() {
     }
 }
 
-class CreatorItem(val creator: Creator) : Item<ViewHolder>() {
+class CreatorItem(val task: Task, val creator: Creator) : Item<ViewHolder>() {
     override fun bind(viewHolder: ViewHolder, position: Int) {
         // will be called in the list of user object
-        viewHolder.itemView.outbox_query_title.text = creator.uname
+        Log.d("creater", creator.toString())
+        Log.d("tasks", Json.encodeToString(task))
+        viewHolder.itemView.outbox_query_title.text = task.task_name
+        viewHolder.itemView.outbox_query_description.text = task.task_description
         val imageURL = creator.profileurl
         if (imageURL != "") {
             Picasso.get().load(imageURL).into(viewHolder.itemView.imageViewprofile)

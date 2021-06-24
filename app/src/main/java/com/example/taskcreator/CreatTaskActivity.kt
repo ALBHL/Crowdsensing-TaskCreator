@@ -5,15 +5,17 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.hardware.GeomagneticField
+import android.hardware.*
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -34,10 +36,11 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_creat_task.*
 import kotlinx.android.synthetic.main.activity_register.*
 import java.util.*
+import kotlin.math.PI
 
 
 class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener,
-    OnMyLocationClickListener, GoogleMap.OnCameraIdleListener {
+    OnMyLocationClickListener, GoogleMap.OnCameraIdleListener, SensorEventListener {
     val PROVIDER_NAME = "com.example.collector/AcronymProvider"
     val URL = "content://$PROVIDER_NAME/Inbox"
     val CONTENT_URI = Uri.parse(URL)
@@ -56,6 +59,17 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
     // GMAP
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var taskLatitude: Double = 0.0
+    private var taskLongitude: Double = 0.0
+    private var markerReadyFlag: Boolean = false
+
+    // sensor
+    private lateinit var sensorManager: SensorManager
+    private var mdeclination: Float = 0f
+    private val accelerometerReading = FloatArray(3)
+    private val magnetometerReading = FloatArray(3)
+    private val rotationMatrix = FloatArray(16)
+    private val orientationAngles = FloatArray(3)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +79,9 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        // sensor
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         button_back_main.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -138,14 +155,16 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
                 // upload the entered things to firebase
                 val uid = FirebaseAuth.getInstance().uid ?: ""
                 val task_id = UUID.randomUUID().toString()
-                val ref = FirebaseDatabase.getInstance().getReference("/users/$uid/$task_id")
+                val ref = FirebaseDatabase.getInstance().getReference("/users/$uid/tasks/$task_id")
 
                 val task = Task(
                     task_id,
                     editTextName.text.toString(),
                     editTextDes.text.toString(),
                     models[0],
-                    uid
+                    uid,
+                    taskLatitude.toString(),
+                    taskLongitude.toString()
                 )
 
                 ref.setValue(task)
@@ -229,7 +248,7 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
         }
 
         val mlocManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val mlocListener: LocationListener = MyLocationListener()
+        val mlocListener: LocationListener = MyLocationListener(mdeclination)
         mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0f, mlocListener)
 
         fusedLocationClient.lastLocation
@@ -238,7 +257,6 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
                 val lat = location?.latitude
                 val long = location?.longitude
                 map.setMyLocationEnabled(true)
-                map.setIndoorEnabled(true)
                 map.getUiSettings().setMyLocationButtonEnabled(true)
                 map.getUiSettings().setCompassEnabled(true)
                 moveMap(lat, long)
@@ -248,6 +266,8 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
     private fun moveMap(latitude: Double?, longitude: Double?) {
         if (latitude != null && longitude != null) {
             val latLng = LatLng(latitude, longitude)
+            taskLatitude = latitude
+            taskLongitude = longitude
             map.addMarker(
                 MarkerOptions()
                     .position(latLng)
@@ -255,54 +275,44 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
                     .title("Marker in India")
             )
 
-            val cameraPosition = CameraPosition.Builder().target(latLng).bearing(0.0f).tilt(0.0f).zoom(15F).build()
+            val cameraPosition =
+                CameraPosition.Builder().target(latLng).bearing(0.0f).tilt(0.0f).zoom(15F).build()
 
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 
 //            map.moveCamera(CameraUpdateFactory.newLatLng(latLng))
 //            map.animateCamera(CameraUpdateFactory.zoomTo(15F))
             map.getUiSettings().setZoomControlsEnabled(true)
+            markerReadyFlag = true
         }
     }
 
     override fun onMyLocationButtonClick(): Boolean {
-        Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show()
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
+
+        SensorManager.getRotationMatrix(
+            rotationMatrix,
+            null,
+            accelerometerReading,
+            magnetometerReading
+        )
+        SensorManager.getOrientation(rotationMatrix, orientationAngles)
+        var azimuth = orientationAngles[0] * 180 / 3.14f
+        var pitch = orientationAngles[1] * 180 / 3.14f
+        var roll = orientationAngles[2] * 180 / 3.14f
+        var facing = (orientationAngles[0] + PI * 2) % (PI * 2)
+
+        Log.d(
+            "Sensor",
+            "Orientation: ${azimuth}, " + "${pitch}, " + "${roll}, heading: ${facing}"
+        )
         return false
     }
 
     override fun onMyLocationClick(location: Location) {
         Toast.makeText(this, "Current location:\n$location", Toast.LENGTH_LONG).show()
-    }
-
-    fun onLocationChanged(location: Location?) {
-        Toast.makeText(this, "Inside onLocationChanged  " + location!!.accuracy, Toast.LENGTH_SHORT)
-            .show()
-        if (location != null) {
-            map.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(
-                        location.latitude,
-                        location.longitude
-                    ), 18f
-                )
-            )
-        } else {
-            updateCameraBearing(map, location.bearing, location)
-        }
-    }
-
-
-    private fun updateCameraBearing(googleMap: GoogleMap?, bearing: Float, location: Location) {
-        if (googleMap == null) return
-        val camPos = CameraPosition
-            .builder(
-                googleMap.cameraPosition // current Camera
-            ).target(LatLng(location.latitude, location.longitude))
-            .bearing(bearing)
-            .build()
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(camPos))
     }
 
     companion object {
@@ -312,32 +322,121 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
          * @see .onRequestPermissionsResult
          */
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        private const val SENSOR_INTERVAL_MICROSECONDS = 1000000
     }
 
     override fun onCameraIdle() {
-        Log.d(
-            "Map",
-            "Bearing: ${map.getCameraPosition().toString()}"
-        )
+//        updateOrientationAngles()
     }
 
 
-    class MyLocationListener : LocationListener {
+    class MyLocationListener(var mdeclination: Float) : LocationListener {
+
         override fun onLocationChanged(location: Location) {
-            var heading: Float = 0f
             var geoField = GeomagneticField(
                 java.lang.Double.valueOf(location.latitude).toFloat(),
                 java.lang.Double.valueOf(location.longitude).toFloat(),
                 java.lang.Double.valueOf(location.altitude).toFloat(),
                 System.currentTimeMillis()
             )
-            heading += geoField.getDeclination();
-            Math.round(-heading / 360 + 180)
+            this.mdeclination = geoField.getDeclination()
+        }
+    }
 
-            Log.d(
-                "MyLocationListener",
-                "Location Bearing: ${location.bearing.toString()}, geo bearing: ${geoField.declination}"
+    // sensor
+    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
+        // Do something here if sensor accuracy changes.
+        // You must implement this callback in your code.
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    override fun onResume() {
+        super.onResume()
+
+        // Get updates from the accelerometer and magnetometer at a constant rate.
+        // To make batch operations more efficient and reduce power consumption,
+        // provide support for delaying updates to the application.
+        //
+        // In this example, the sensor reporting delay is small enough such that
+        // the application receives an update before the system checks the sensor
+        // readings again.
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also { accelerometer ->
+            sensorManager.registerListener(
+                this,
+                accelerometer,
+                SensorManager.SENSOR_DELAY_NORMAL,
+                SensorManager.SENSOR_DELAY_UI
             )
         }
+        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.also { magneticField ->
+            sensorManager.registerListener(
+                this,
+                magneticField,
+                SensorManager.SENSOR_DELAY_NORMAL,
+                SensorManager.SENSOR_DELAY_UI
+            )
+        }
+        sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)?.also { rotation ->
+            sensorManager.registerListener(
+                this,
+                rotation,
+                SENSOR_INTERVAL_MICROSECONDS,
+                SENSOR_INTERVAL_MICROSECONDS
+            )
+        }
+
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+
+        // Don't receive any more updates from either sensor.
+        sensorManager.unregisterListener(this)
+    }
+
+    // Get readings from accelerometer and magnetometer. To simplify calculations,
+    // consider storing these readings as unit vectors.
+    override fun onSensorChanged(event: SensorEvent) {
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            System.arraycopy(event.values, 0, accelerometerReading, 0, accelerometerReading.size)
+        } else if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            System.arraycopy(event.values, 0, magnetometerReading, 0, magnetometerReading.size)
+        } else if (event.sensor.type == Sensor.TYPE_ROTATION_VECTOR) {
+//            System.arraycopy(event.values, 0, magnetometerReading, 0, magnetometerReading.size)
+            if (this::map.isInitialized && markerReadyFlag) {
+                SensorManager.getRotationMatrixFromVector(
+                    rotationMatrix, event.values
+                )
+                val orientation = FloatArray(3)
+                SensorManager.getOrientation(rotationMatrix, orientation)
+                val bearing: Double = Math.toDegrees(orientation[0].toDouble()) + mdeclination
+                Log.i("bearing:", bearing.toString())
+                updateCamera(bearing)
+            }
+        }
+    }
+
+    private fun updateCamera(bearing: Double) {
+        val latLng = LatLng(taskLatitude, taskLongitude)
+        val pos = CameraPosition.builder().target(latLng).bearing(bearing.toFloat()).zoom(15F).build()
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(pos))
+
+    }
+
+    data class Tilt(val yaw: Float, val pitch: Float, val roll: Float)
+
+    fun updateOrientationAngles() {
+        // Update rotation matrix, which is needed to update orientation angles.
+        SensorManager.getRotationMatrix(
+            rotationMatrix,
+            null,
+            accelerometerReading,
+            magnetometerReading
+        )
+
+        // "rotationMatrix" now has up-to-date information.
+
+        SensorManager.getOrientation(rotationMatrix, orientationAngles)
     }
 }
