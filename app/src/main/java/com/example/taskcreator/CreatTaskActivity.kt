@@ -111,15 +111,9 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
                             )
                             == PackageManager.PERMISSION_GRANTED
                         ) {
-                            fusedLocationClient.lastLocation
-                                .addOnSuccessListener { location: Location? ->
-                                    val latLng =
-                                        location?.latitude?.let { LatLng(it, location?.longitude) }
-                                    if (latLng != null) {
-                                        taskValidRangeOverlay.remove()
-                                        addOverlay(latLng, map)
-                                    }
-                                }
+                            val latLng = LatLng(taskLatitude, taskLongitude)
+                            taskValidRangeOverlay.remove()
+                            addOverlay(latLng, map)
                         }
                     }
                 }
@@ -375,7 +369,6 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
         val mlocManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val mlocListener: LocationListener = MyLocationListener(mdeclination)
         mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0f, mlocListener)
-
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 val lat = location?.latitude
@@ -385,6 +378,16 @@ class CreatTaskActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationB
                 map.getUiSettings().setMyLocationButtonEnabled(true)
                 map.getUiSettings().setCompassEnabled(true)
             }
+        map.setOnMapLongClickListener {
+            map.clear()
+            map.addMarker(
+                MarkerOptions()
+                    .position(it)
+            )
+            addOverlay(it, map)
+            taskLatitude = it.latitude
+            taskLongitude = it.longitude
+        }
     }
 
     private fun moveMap(latitude: Double?, longitude: Double?) {
